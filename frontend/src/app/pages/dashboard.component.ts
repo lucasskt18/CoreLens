@@ -7,6 +7,7 @@ import { ApiService } from '../core/api.service';
 import { formatBytes, formatPct, formatRate, formatTemp, sparkline } from '../core/chart.util';
 import { MetricsService } from '../core/metrics.service';
 import { AlertEventDto, ComputerSummary, InsightDto } from '../core/models';
+import { PopupWindowService } from '../core/popup-window.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,6 +18,7 @@ import { AlertEventDto, ComputerSummary, InsightDto } from '../core/models';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private readonly api = inject(ApiService);
+  private readonly popupWindow = inject(PopupWindowService);
   readonly metrics = inject(MetricsService);
 
   computer?: ComputerSummary;
@@ -70,6 +72,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   get connected(): boolean {
     return this.metrics.connected$.value;
+  }
+
+  openPopup(): void {
+    const opened = this.popupWindow.open();
+    if (!opened) {
+      this.error = 'O navegador bloqueou o pop-up. Permita pop-ups para localhost:4200.';
+    }
   }
 
   private async bootstrap(): Promise<void> {
