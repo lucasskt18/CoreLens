@@ -1,0 +1,13 @@
+bin/
+obj/
+.vs/
+.idea/
+*.user
+*.suo
+appsettings.Development.json
+**/node_modules/
+frontend/dist/
+frontend/.angular/
+.dotnet/
+*.log
+publish/

@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CE4F726F-F73B-4990-9B07-73AA72D7815A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLens.Contracts", "src\CoreLens.Contracts\CoreLens.Contracts.csproj", "{63447563-E47E-42BA-9B07-8A31918AFF6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLens.Domain", "src\CoreLens.Domain\CoreLens.Domain.csproj", "{04840488-B4F3-4E97-98BC-77E9DAE0DF4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLens.Application", "src\CoreLens.Application\CoreLens.Application.csproj", "{AF6F33DA-2DCE-4CE4-9E32-913FFCE06FD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLens.Infrastructure", "src\CoreLens.Infrastructure\CoreLens.Infrastructure.csproj", "{E3FD2DBC-901B-4507-AD54-56B1F1EEE857}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLens.Api", "src\CoreLens.Api\CoreLens.Api.csproj", "{B929112A-8A30-4F45-8222-5DB461AE9EE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLens.Agent", "src\CoreLens.Agent\CoreLens.Agent.csproj", "{6C5218CA-0BDD-4046-A2BF-436A31648C2E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{63447563-E47E-42BA-9B07-8A31918AFF6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63447563-E47E-42BA-9B07-8A31918AFF6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63447563-E47E-42BA-9B07-8A31918AFF6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63447563-E47E-42BA-9B07-8A31918AFF6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04840488-B4F3-4E97-98BC-77E9DAE0DF4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04840488-B4F3-4E97-98BC-77E9DAE0DF4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04840488-B4F3-4E97-98BC-77E9DAE0DF4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04840488-B4F3-4E97-98BC-77E9DAE0DF4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF6F33DA-2DCE-4CE4-9E32-913FFCE06FD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF6F33DA-2DCE-4CE4-9E32-913FFCE06FD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF6F33DA-2DCE-4CE4-9E32-913FFCE06FD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF6F33DA-2DCE-4CE4-9E32-913FFCE06FD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3FD2DBC-901B-4507-AD54-56B1F1EEE857}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3FD2DBC-901B-4507-AD54-56B1F1EEE857}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3FD2DBC-901B-4507-AD54-56B1F1EEE857}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3FD2DBC-901B-4507-AD54-56B1F1EEE857}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B929112A-8A30-4F45-8222-5DB461AE9EE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B929112A-8A30-4F45-8222-5DB461AE9EE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B929112A-8A30-4F45-8222-5DB461AE9EE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B929112A-8A30-4F45-8222-5DB461AE9EE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C5218CA-0BDD-4046-A2BF-436A31648C2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C5218CA-0BDD-4046-A2BF-436A31648C2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C5218CA-0BDD-4046-A2BF-436A31648C2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C5218CA-0BDD-4046-A2BF-436A31648C2E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{63447563-E47E-42BA-9B07-8A31918AFF6E} = {CE4F726F-F73B-4990-9B07-73AA72D7815A}
+		{04840488-B4F3-4E97-98BC-77E9DAE0DF4E} = {CE4F726F-F73B-4990-9B07-73AA72D7815A}
+		{AF6F33DA-2DCE-4CE4-9E32-913FFCE06FD3} = {CE4F726F-F73B-4990-9B07-73AA72D7815A}
+		{E3FD2DBC-901B-4507-AD54-56B1F1EEE857} = {CE4F726F-F73B-4990-9B07-73AA72D7815A}
+		{B929112A-8A30-4F45-8222-5DB461AE9EE4} = {CE4F726F-F73B-4990-9B07-73AA72D7815A}
+		{6C5218CA-0BDD-4046-A2BF-436A31648C2E} = {CE4F726F-F73B-4990-9B07-73AA72D7815A}
+	EndGlobalSection
+EndGlobal

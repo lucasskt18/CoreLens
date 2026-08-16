@@ -1,0 +1,62 @@
+<div class="page">
+  <header class="hero">
+    <div>
+      <p class="kicker">CoreLens</p>
+      <h1>{{ computer?.hostname || 'Aguardando agent' }}</h1>
+      <p class="meta">
+        @if (computer) {
+          {{ computer.osVersion }} · agent {{ computer.agentVersion }} · visto {{ computer.lastSeenAt | date:'HH:mm:ss' }}
+        } @else {
+          O Hardware Agent ainda não enviou inventário.
+        }
+      </p>
+    </div>
+    <div class="status">
+      <span class="dot" [class.on]="connected"></span>
+      {{ connected ? 'SignalR ao vivo' : 'Desconectado' }}
+      <a routerLink="/history">Histórico</a>
+    </div>
+  </header>
+
+  @if (error) {
+    <p class="banner">{{ error }}</p>
+  }
+  @if (waiting && !error) {
+    <p class="banner">Esperando o primeiro ingest do Agent em <code>http://localhost:5080</code>.</p>
+  }
+
+  <div class="grid">
+    <app-metric-panel kicker="CPU" title="Utilização" [value]="cpuValue" [options]="cpuChart"></app-metric-panel>
+    <app-metric-panel kicker="RAM" title="Memória" [value]="ramValue" [hint]="ramHint" [options]="ramChart"></app-metric-panel>
+    <app-metric-panel kicker="Disco" title="Espaço usado" [value]="diskValue" [hint]="diskHint" [options]="diskChart"></app-metric-panel>
+    <app-metric-panel kicker="Rede" title="Download" [value]="netValue" [hint]="netHint" [options]="netChart"></app-metric-panel>
+    <app-metric-panel kicker="Térmico" title="CPU temp" [value]="tempValue" [options]="tempChart" hint="N/A se o serviço não estiver elevado"></app-metric-panel>
+    <app-metric-panel kicker="GPU" title="Load / temp" [value]="gpuValue" [hint]="gpuHint || 'Sem GPU reportada'" [options]="gpuChart"></app-metric-panel>
+  </div>
+
+  <div class="lower">
+    <section class="panel">
+      <h2>Alertas</h2>
+      @if (alerts.length === 0) {
+        <p class="empty">Nenhum alerta. Regras padrão: CPU > 90% / 30s, temp > 80°C, RAM > 90%.</p>
+      } @else {
+        <ul>
+          @for (alert of alerts; track alert.id) {
+            <li [class.critical]="alert.severity === 'critical'">
+              <strong>{{ alert.severity }}</strong>
+              <span>{{ alert.message }}</span>
+              <time>{{ alert.time | date:'HH:mm:ss' }}</time>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+    <section class="panel">
+      <h2>Insights</h2>
+      @for (insight of insights; track insight.title) {
+        <p class="insight-title">{{ insight.title }}</p>
+        <p class="empty">{{ insight.summary }}</p>
+      }
+    </section>
+  </div>
+</div>
