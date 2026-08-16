@@ -16,6 +16,7 @@
         <span class="dot" [class.on]="connected"></span>
         {{ connected ? 'Ao vivo' : 'Desconectado' }}
       </span>
+      <button type="button" (click)="openPopup()">Segundo plano</button>
       <a routerLink="/history">Histórico</a>
     </div>
   </header>
