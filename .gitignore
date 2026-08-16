@@ -11,3 +11,5 @@ frontend/.angular/
 .dotnet/
 *.log
 publish/
+src/CoreLens.Api/wwwroot/*
+!src/CoreLens.Api/wwwroot/.gitkeep
