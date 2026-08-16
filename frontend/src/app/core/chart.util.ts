@@ -1,47 +1,83 @@
 import { EChartsOption } from 'echarts';
 import { SeriesPoint } from '../core/models';
 
-export function sparkline(points: SeriesPoint[], color: string): EChartsOption {
+const LINE = '#7a93b2';
+const FILL = 'rgba(122, 147, 178, 0.12)';
+const TOOLTIP_BG = '#16181d';
+const TOOLTIP_TEXT = '#e6e8ee';
+const AXIS = '#6b7380';
+const GRID = 'rgba(255, 255, 255, 0.06)';
+
+export type SparklineKind = 'percent' | 'series' | 'temp';
+
+export function sparkline(points: SeriesPoint[], kind: SparklineKind = 'series'): EChartsOption {
+  const yAxis: EChartsOption['yAxis'] =
+    kind === 'percent'
+      ? { type: 'value', min: 0, max: 100, show: false }
+      : kind === 'temp'
+        ? { type: 'value', min: 0, max: 100, show: false }
+        : { type: 'value', min: 0, scale: true, show: false };
+
   return {
     animation: false,
-    grid: { left: 8, right: 8, top: 8, bottom: 8 },
+    backgroundColor: 'transparent',
+    grid: { left: 0, right: 0, top: 8, bottom: 0 },
     xAxis: { type: 'time', show: false },
-    yAxis: { type: 'value', show: false, scale: true },
+    yAxis,
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#10182a',
-      borderColor: 'rgba(148,163,184,0.2)',
-      textStyle: { color: '#e8eefc' }
+      backgroundColor: TOOLTIP_BG,
+      borderWidth: 0,
+      padding: [6, 10],
+      textStyle: { color: TOOLTIP_TEXT, fontSize: 12, fontFamily: 'IBM Plex Sans, sans-serif' },
+      extraCssText: 'box-shadow: 0 8px 24px rgba(0,0,0,.35); border-radius: 6px;'
     },
     series: [
       {
         type: 'line',
         showSymbol: false,
-        smooth: true,
+        smooth: false,
         data: points.map(p => [p.time, p.value]),
-        lineStyle: { width: 2, color },
-        areaStyle: { color: `${color}33` }
+        lineStyle: { width: 1.5, color: LINE },
+        areaStyle: { color: FILL }
       }
     ]
   };
 }
 
-export function historyChart(points: SeriesPoint[], label: string, color: string): EChartsOption {
+export function historyChart(points: SeriesPoint[], label: string): EChartsOption {
   return {
+    animationDuration: 300,
     backgroundColor: 'transparent',
-    tooltip: { trigger: 'axis' },
-    grid: { left: 48, right: 16, top: 24, bottom: 32 },
-    xAxis: { type: 'time', axisLabel: { color: '#8ea0c0' } },
-    yAxis: { type: 'value', axisLabel: { color: '#8ea0c0' }, splitLine: { lineStyle: { color: 'rgba(148,163,184,0.12)' } } },
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: TOOLTIP_BG,
+      borderWidth: 0,
+      textStyle: { color: TOOLTIP_TEXT, fontSize: 12 }
+    },
+    grid: { left: 44, right: 12, top: 16, bottom: 28 },
+    xAxis: {
+      type: 'time',
+      axisLine: { lineStyle: { color: GRID } },
+      axisLabel: { color: AXIS, fontSize: 11 },
+      splitLine: { show: false }
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: { color: AXIS, fontSize: 11 },
+      splitLine: { lineStyle: { color: GRID, type: 'dashed' } },
+      axisLine: { show: false },
+      axisTick: { show: false }
+    },
     series: [
       {
         name: label,
         type: 'line',
         showSymbol: false,
-        smooth: true,
+        smooth: false,
         data: points.map(p => [p.time, p.value]),
-        lineStyle: { width: 2, color },
-        areaStyle: { color: `${color}22` }
+        lineStyle: { width: 1.6, color: LINE },
+        areaStyle: { color: FILL }
       }
     ]
   };

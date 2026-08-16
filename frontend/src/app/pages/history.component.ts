@@ -41,20 +41,21 @@ import { ComputerSummary, SeriesPoint } from '../core/models';
     </div>
   `,
   styles: [`
-    .page { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
-    .back { color: var(--accent); }
-    h1 { margin: 12px 0 8px; }
-    .meta { color: var(--muted); }
-    .controls { display: flex; gap: 16px; margin: 18px 0; }
-    label { display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 12px; }
+    .page { max-width: 1100px; margin: 0 auto; padding: 32px 24px 56px; }
+    .back { color: var(--muted); font-size: 13px; }
+    .back:hover { color: var(--text); }
+    h1 { margin: 14px 0 6px; font-size: 26px; font-weight: 600; letter-spacing: -0.03em; }
+    .meta { color: var(--muted); margin: 0; font-size: 13px; }
+    .controls { display: flex; gap: 16px; margin: 20px 0; }
+    label { display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
     select {
       background: var(--card);
       color: var(--text);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 6px;
       padding: 8px 10px;
     }
-    .chart { height: 420px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 8px; }
+    .chart { height: 420px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 4px 0; }
   `]
 })
 export class HistoryComponent implements OnInit {
@@ -90,7 +91,7 @@ export class HistoryComponent implements OnInit {
 
     const first = [...grouped.entries()][0];
     this.chart = first
-      ? historyChart(first[1], `${first[0]} ${this.metricName}`, '#5eead4')
-      : historyChart([], this.metricName, '#5eead4');
+      ? historyChart(first[1], `${first[0]} ${this.metricName}`)
+      : historyChart([], this.metricName);
   }
 }

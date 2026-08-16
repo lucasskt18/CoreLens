@@ -42,6 +42,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   diskHint = '';
   netHint = '';
   gpuHint = '';
+  cpuPct: number | null = null;
+  ramPct: number | null = null;
+  diskPct: number | null = null;
+  gpuPct: number | null = null;
+  cpuHasSeries = false;
+  ramHasSeries = false;
+  diskHasSeries = false;
+  netHasSeries = false;
+  tempHasSeries = false;
+  gpuHasSeries = false;
 
   private poll?: ReturnType<typeof setInterval>;
 
@@ -92,41 +102,54 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const cpu = this.metrics.getLatest('cpu:0', 'load_pct');
     const ram = this.metrics.getLatest('ram:0', 'used_pct');
     const cpuTemp = this.metrics.getLatest('cpu:0', 'temp_c');
+    const cpuSeries = this.metrics.getSeries('cpu:0', 'load_pct');
+    const ramSeries = this.metrics.getSeries('ram:0', 'used_pct');
+    const tempSeries = this.metrics.getSeries('cpu:0', 'temp_c');
 
     this.cpuValue = formatPct(cpu);
     this.ramValue = formatPct(ram);
     this.tempValue = formatTemp(cpuTemp);
+    this.cpuPct = cpu ?? null;
+    this.ramPct = ram ?? null;
     this.ramHint = `${formatBytes(this.metrics.getLatest('ram:0', 'used_bytes'))} / ${formatBytes(this.metrics.getLatest('ram:0', 'total_bytes'))}`;
+    this.cpuHasSeries = cpuSeries.length > 1;
+    this.ramHasSeries = ramSeries.length > 1;
+    this.tempHasSeries = tempSeries.length > 1;
+    this.cpuChart = sparkline(cpuSeries, 'percent');
+    this.ramChart = sparkline(ramSeries, 'percent');
+    this.tempChart = sparkline(tempSeries, 'temp');
 
     const diskKey = this.metrics.keysByPrefix('disk:', 'used_pct')[0];
     if (diskKey) {
-      this.diskValue = formatPct(this.metrics.getLatest(diskKey, 'used_pct'));
+      const diskSeries = this.metrics.getSeries(diskKey, 'used_pct');
+      this.diskPct = this.metrics.getLatest(diskKey, 'used_pct') ?? null;
+      this.diskValue = formatPct(this.diskPct ?? undefined);
       this.diskHint = diskKey;
-      this.diskChart = sparkline(this.metrics.getSeries(diskKey, 'used_pct'), '#38bdf8');
+      this.diskHasSeries = diskSeries.length > 1;
+      this.diskChart = sparkline(diskSeries, 'percent');
     }
 
     const netKey = this.metrics.keysByPrefix('net:', 'bytes_recv_per_s')[0];
     if (netKey) {
+      const netSeries = this.metrics.getSeries(netKey, 'bytes_recv_per_s');
       const down = this.metrics.getLatest(netKey, 'bytes_recv_per_s');
       const up = this.metrics.getLatest(netKey, 'bytes_sent_per_s');
       this.netValue = formatRate(down);
       this.netHint = `up ${formatRate(up)} · ${netKey}`;
-      this.netChart = sparkline(this.metrics.getSeries(netKey, 'bytes_recv_per_s'), '#a78bfa');
+      this.netHasSeries = netSeries.length > 1;
+      this.netChart = sparkline(netSeries, 'series');
     }
 
     const gpuKey = this.metrics.keysByPrefix('gpu:', 'load_pct')[0] ?? this.metrics.keysByPrefix('gpu:')[0];
     if (gpuKey) {
       const load = this.metrics.getLatest(gpuKey, 'load_pct');
+      const gpuMetric = load == null ? 'temp_c' : 'load_pct';
+      const gpuSeries = this.metrics.getSeries(gpuKey, gpuMetric);
       this.gpuValue = load == null ? formatTemp(this.metrics.getLatest(gpuKey, 'temp_c')) : formatPct(load);
+      this.gpuPct = load ?? null;
       this.gpuHint = gpuKey;
-      this.gpuChart = sparkline(
-        this.metrics.getSeries(gpuKey, load == null ? 'temp_c' : 'load_pct'),
-        '#f472b6'
-      );
+      this.gpuHasSeries = gpuSeries.length > 1;
+      this.gpuChart = sparkline(gpuSeries, load == null ? 'temp' : 'percent');
     }
-
-    this.cpuChart = sparkline(this.metrics.getSeries('cpu:0', 'load_pct'), '#5eead4');
-    this.ramChart = sparkline(this.metrics.getSeries('ram:0', 'used_pct'), '#fbbf24');
-    this.tempChart = sparkline(this.metrics.getSeries('cpu:0', 'temp_c'), '#fb7185');
   }
 }

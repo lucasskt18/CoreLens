@@ -1,15 +1,15 @@
 :root {
-  --bg: #070b16;
-  --bg-elevated: #10182a;
-  --card: #141c31;
-  --line: rgba(148, 163, 184, 0.16);
-  --text: #e8eefc;
-  --muted: #8ea0c0;
-  --accent: #5eead4;
-  --accent-dim: rgba(94, 234, 212, 0.14);
-  --warning: #fbbf24;
-  --critical: #fb7185;
-  --ok: #34d399;
+  --bg: #0b0c0e;
+  --card: #121417;
+  --line: rgba(255, 255, 255, 0.07);
+  --text: #e8eaed;
+  --muted: #8b919a;
+  --chart: #7a93b2;
+  --track: rgba(255, 255, 255, 0.08);
+  --accent: #9eb4cc;
+  --warning: #c8a45a;
+  --critical: #c97878;
+  --ok: #6ea58a;
 }
 
 * { box-sizing: border-box; }
@@ -17,14 +17,14 @@
 html, body {
   margin: 0;
   min-height: 100%;
-  background: radial-gradient(1200px 600px at 10% -10%, #152246 0%, var(--bg) 55%);
+  background: var(--bg);
   color: var(--text);
   font-family: "IBM Plex Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 a { color: inherit; text-decoration: none; }
 
-button {
+button, select {
   font-family: inherit;
-  cursor: pointer;
 }

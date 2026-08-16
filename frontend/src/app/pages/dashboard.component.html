@@ -12,8 +12,10 @@
       </p>
     </div>
     <div class="status">
-      <span class="dot" [class.on]="connected"></span>
-      {{ connected ? 'SignalR ao vivo' : 'Desconectado' }}
+      <span class="live">
+        <span class="dot" [class.on]="connected"></span>
+        {{ connected ? 'Ao vivo' : 'Desconectado' }}
+      </span>
       <a routerLink="/history">Histórico</a>
     </div>
   </header>
@@ -26,19 +28,64 @@
   }
 
   <div class="grid">
-    <app-metric-panel kicker="CPU" title="Utilização" [value]="cpuValue" [options]="cpuChart"></app-metric-panel>
-    <app-metric-panel kicker="RAM" title="Memória" [value]="ramValue" [hint]="ramHint" [options]="ramChart"></app-metric-panel>
-    <app-metric-panel kicker="Disco" title="Espaço usado" [value]="diskValue" [hint]="diskHint" [options]="diskChart"></app-metric-panel>
-    <app-metric-panel kicker="Rede" title="Download" [value]="netValue" [hint]="netHint" [options]="netChart"></app-metric-panel>
-    <app-metric-panel kicker="Térmico" title="CPU temp" [value]="tempValue" [options]="tempChart" hint="N/A se o serviço não estiver elevado"></app-metric-panel>
-    <app-metric-panel kicker="GPU" title="Load / temp" [value]="gpuValue" [hint]="gpuHint || 'Sem GPU reportada'" [options]="gpuChart"></app-metric-panel>
+    <app-metric-panel
+      kicker="CPU"
+      title="Utilização"
+      [value]="cpuValue"
+      [options]="cpuChart"
+      [hasSeries]="cpuHasSeries"
+      [progress]="cpuPct">
+    </app-metric-panel>
+    <app-metric-panel
+      kicker="RAM"
+      title="Memória"
+      [value]="ramValue"
+      [hint]="ramHint"
+      [options]="ramChart"
+      [hasSeries]="ramHasSeries"
+      [progress]="ramPct">
+    </app-metric-panel>
+    <app-metric-panel
+      kicker="Disco"
+      title="Espaço usado"
+      [value]="diskValue"
+      [hint]="diskHint"
+      [options]="diskChart"
+      [hasSeries]="diskHasSeries"
+      [progress]="diskPct">
+    </app-metric-panel>
+    <app-metric-panel
+      kicker="Rede"
+      title="Download"
+      [value]="netValue"
+      [hint]="netHint"
+      [options]="netChart"
+      [hasSeries]="netHasSeries">
+    </app-metric-panel>
+    <app-metric-panel
+      kicker="Térmico"
+      title="CPU temp"
+      [value]="tempValue"
+      [options]="tempChart"
+      [hasSeries]="tempHasSeries"
+      hint="N/A se o serviço não estiver elevado">
+    </app-metric-panel>
+    <app-metric-panel
+      kicker="GPU"
+      title="Load / temp"
+      [value]="gpuValue"
+      [hint]="gpuHint || 'Sem GPU reportada'"
+      [options]="gpuChart"
+      [hasSeries]="gpuHasSeries"
+      [progress]="gpuPct">
+    </app-metric-panel>
   </div>
 
   <div class="lower">
     <section class="panel">
       <h2>Alertas</h2>
       @if (alerts.length === 0) {
-        <p class="empty">Nenhum alerta. Regras padrão: CPU > 90% / 30s, temp > 80°C, RAM > 90%.</p>
+        <p class="empty">Nenhum alerta. Regras padrão: CPU &gt; 90% / 30s, temp &gt; 80°C, RAM &gt; 90%.</p>
       } @else {
         <ul>
           @for (alert of alerts; track alert.id) {
