@@ -1,10 +1,20 @@
 import { Injectable } from '@angular/core';
 
+type ChromeWebView = {
+  postMessage(message: unknown): void;
+};
+
 @Injectable({ providedIn: 'root' })
 export class PopupWindowService {
   private popup: Window | null = null;
 
   open(): boolean {
+    const webview = (window as Window & { chrome?: { webview?: ChromeWebView } }).chrome?.webview;
+    if (webview) {
+      webview.postMessage({ type: 'open-mini' });
+      return true;
+    }
+
     if (this.popup && !this.popup.closed) {
       this.popup.focus();
       return true;

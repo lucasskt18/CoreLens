@@ -1,0 +1,24 @@
+﻿<Window x:Class="CoreLens.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="CoreLens"
+        Width="1280"
+        Height="800"
+        MinWidth="880"
+        MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        Background="#0B0C0E">
+    <Grid>
+        <TextBlock x:Name="StatusText"
+                   Text="Iniciando CoreLens..."
+                   Foreground="#8B919A"
+                   FontSize="14"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   TextAlignment="Center"
+                   TextWrapping="Wrap"
+                   Margin="40"/>
+        <wv2:WebView2 x:Name="WebView" Visibility="Collapsed"/>
+    </Grid>
+</Window>
