@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { EChartsOption } from 'echarts';
 import { MetricPanelComponent } from '../components/metric-panel.component';
 import { ApiService } from '../core/api.service';
-import { formatBytes, formatPct, formatRate, formatTemp, sparkline } from '../core/chart.util';
+import { METRIC_COLORS, formatBytes, formatPct, formatRate, formatTemp, sparkline } from '../core/chart.util';
 import { MetricsService } from '../core/metrics.service';
 import { AlertEventDto, ComputerSummary, InsightDto } from '../core/models';
 import { PopupWindowService } from '../core/popup-window.service';
@@ -54,6 +54,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   netHasSeries = false;
   tempHasSeries = false;
   gpuHasSeries = false;
+  readonly colors = METRIC_COLORS;
 
   private poll?: ReturnType<typeof setInterval>;
 
@@ -124,9 +125,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.cpuHasSeries = cpuSeries.length > 1;
     this.ramHasSeries = ramSeries.length > 1;
     this.tempHasSeries = tempSeries.length > 1;
-    this.cpuChart = sparkline(cpuSeries, 'percent');
-    this.ramChart = sparkline(ramSeries, 'percent');
-    this.tempChart = sparkline(tempSeries, 'temp');
+    this.cpuChart = sparkline(cpuSeries, 'percent', METRIC_COLORS.cpu);
+    this.ramChart = sparkline(ramSeries, 'percent', METRIC_COLORS.ram);
+    this.tempChart = sparkline(tempSeries, 'temp', METRIC_COLORS.temp);
 
     const diskKey = this.metrics.keysByPrefix('disk:', 'used_pct')[0];
     if (diskKey) {
@@ -135,7 +136,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.diskValue = formatPct(this.diskPct ?? undefined);
       this.diskHint = diskKey;
       this.diskHasSeries = diskSeries.length > 1;
-      this.diskChart = sparkline(diskSeries, 'percent');
+      this.diskChart = sparkline(diskSeries, 'percent', METRIC_COLORS.disk);
     }
 
     const netKey = this.metrics.keysByPrefix('net:', 'bytes_recv_per_s')[0];
@@ -146,7 +147,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.netValue = formatRate(down);
       this.netHint = `up ${formatRate(up)} · ${netKey}`;
       this.netHasSeries = netSeries.length > 1;
-      this.netChart = sparkline(netSeries, 'series');
+      this.netChart = sparkline(netSeries, 'series', METRIC_COLORS.net);
     }
 
     const gpuKey = this.metrics.keysByPrefix('gpu:', 'load_pct')[0] ?? this.metrics.keysByPrefix('gpu:')[0];
@@ -158,7 +159,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.gpuPct = load ?? null;
       this.gpuHint = gpuKey;
       this.gpuHasSeries = gpuSeries.length > 1;
-      this.gpuChart = sparkline(gpuSeries, load == null ? 'temp' : 'percent');
+      this.gpuChart = sparkline(gpuSeries, load == null ? 'temp' : 'percent', METRIC_COLORS.gpu);
     }
   }
 }

@@ -1,14 +1,14 @@
 :root {
-  --bg: #0b0c0e;
-  --card: #121417;
-  --line: rgba(255, 255, 255, 0.07);
+  --bg: #07080b;
+  --card: #11151b;
+  --line: rgba(255, 255, 255, 0.075);
   --text: #e8eaed;
   --muted: #8b919a;
-  --chart: #7a93b2;
-  --track: rgba(255, 255, 255, 0.08);
-  --accent: #9eb4cc;
-  --warning: #c8a45a;
-  --critical: #c97878;
+  --chart: #6eb5d8;
+  --track: rgba(255, 255, 255, 0.07);
+  --accent: #c5d4e4;
+  --warning: #d4b07a;
+  --critical: #d4897a;
   --ok: #6ea58a;
 }
 
@@ -17,14 +17,39 @@
 html, body {
   margin: 0;
   min-height: 100%;
-  background: var(--bg);
+  background:
+    radial-gradient(980px 480px at 6% -18%, rgba(110, 181, 216, 0.09), transparent 52%),
+    radial-gradient(760px 420px at 100% -8%, rgba(155, 143, 212, 0.06), transparent 48%),
+    radial-gradient(640px 380px at 70% 110%, rgba(94, 196, 182, 0.04), transparent 50%),
+    var(--bg);
   color: var(--text);
   font-family: "IBM Plex Sans", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(110, 181, 216, 0.28);
+  color: var(--text);
 }
 
 a { color: inherit; text-decoration: none; }
 
 button, select {
   font-family: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
 }

@@ -1,12 +1,13 @@
 import { Component, HostBinding, OnDestroy, OnInit, inject } from '@angular/core';
 import { ApiService } from '../core/api.service';
-import { formatPct, formatRate, formatTemp } from '../core/chart.util';
+import { formatPct, formatRate, formatTemp, METRIC_COLORS } from '../core/chart.util';
 import { MetricsService } from '../core/metrics.service';
 
 interface PopupRow {
   label: string;
   value: string;
   progress: number | null;
+  color: string;
 }
 
 @Component({
@@ -34,7 +35,7 @@ interface PopupRow {
             </div>
             @if (row.progress != null) {
               <div class="track">
-                <div class="fill" [style.width.%]="row.progress"></div>
+                <div class="fill" [style.width.%]="row.progress" [style.--metric]="row.color"></div>
               </div>
             }
           </li>
@@ -51,7 +52,7 @@ interface PopupRow {
       background: var(--bg);
     }
     .mini {
-      padding: 14px 14px 12px;
+      padding: 16px 16px 14px;
     }
     header {
       display: flex;
@@ -59,15 +60,16 @@ interface PopupRow {
       align-items: flex-start;
       gap: 10px;
       margin-bottom: 14px;
-      padding-bottom: 10px;
+      padding-bottom: 12px;
       border-bottom: 1px solid var(--line);
     }
     .kicker {
       margin: 0;
-      color: var(--muted);
+      color: var(--accent);
       font-size: 10px;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
+      font-weight: 600;
     }
     h1 {
       margin: 4px 0 0;
@@ -108,6 +110,7 @@ interface PopupRow {
       color: var(--text);
       font-family: "IBM Plex Mono", ui-monospace, monospace;
       font-weight: 500;
+      font-variant-numeric: tabular-nums;
     }
     .track {
       margin-top: 6px;
@@ -118,7 +121,18 @@ interface PopupRow {
     }
     .fill {
       height: 100%;
-      background: var(--chart);
+      --metric: #6eb5d8;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--metric) 70%, #1a1d22), var(--metric));
+      transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .dot.on {
+      box-shadow: 0 0 0 0 rgba(110, 165, 138, 0.55);
+      animation: live-pulse 1.8s ease-out infinite;
+    }
+    @keyframes live-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(110, 165, 138, 0.55); }
+      70% { box-shadow: 0 0 0 6px rgba(110, 165, 138, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(110, 165, 138, 0); }
     }
     .hint {
       margin: 16px 0 0;
@@ -177,12 +191,12 @@ export class PopupComponent implements OnInit, OnDestroy {
     const gpu = gpuKey ? this.metrics.getLatest(gpuKey, 'load_pct') : undefined;
 
     this.rows = [
-      { label: 'CPU', value: formatPct(cpu), progress: cpu ?? null },
-      { label: 'RAM', value: formatPct(ram), progress: ram ?? null },
-      { label: 'GPU', value: formatPct(gpu), progress: gpu ?? null },
-      { label: 'Disco', value: formatPct(disk), progress: disk ?? null },
-      { label: 'Rede', value: formatRate(down), progress: null },
-      { label: 'Temp', value: formatTemp(temp), progress: temp ?? null }
+      { label: 'CPU', value: formatPct(cpu), progress: cpu ?? null, color: METRIC_COLORS.cpu },
+      { label: 'RAM', value: formatPct(ram), progress: ram ?? null, color: METRIC_COLORS.ram },
+      { label: 'GPU', value: formatPct(gpu), progress: gpu ?? null, color: METRIC_COLORS.gpu },
+      { label: 'Disco', value: formatPct(disk), progress: disk ?? null, color: METRIC_COLORS.disk },
+      { label: 'Rede', value: formatRate(down), progress: null, color: METRIC_COLORS.net },
+      { label: 'Temp', value: formatTemp(temp), progress: temp ?? null, color: METRIC_COLORS.temp }
     ];
   }
 }

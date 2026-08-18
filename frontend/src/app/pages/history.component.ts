@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { ApiService } from '../core/api.service';
-import { historyChart } from '../core/chart.util';
+import { METRIC_COLORS, historyChart } from '../core/chart.util';
 import { ComputerSummary, SeriesPoint } from '../core/models';
 
 @Component({
@@ -15,8 +15,13 @@ import { ComputerSummary, SeriesPoint } from '../core/models';
   template: `
     <div class="page">
       <a routerLink="/" class="back">← Dashboard</a>
-      <h1>Histórico</h1>
-      <p class="meta">{{ computer?.hostname }} · bucket {{ bucket }}</p>
+      <header class="hero">
+        <div>
+          <p class="kicker">CoreLens</p>
+          <h1>Histórico</h1>
+          <p class="meta">{{ computer?.hostname || 'Aguardando agent' }} · bucket {{ bucket }}</p>
+        </div>
+      </header>
 
       <div class="controls">
         <label>Métrica
@@ -37,25 +42,67 @@ import { ComputerSummary, SeriesPoint } from '../core/models';
         </label>
       </div>
 
-      <div echarts [options]="chart" class="chart"></div>
+      <div class="chart-card">
+        <div echarts [options]="chart" class="chart"></div>
+      </div>
     </div>
   `,
   styles: [`
-    .page { max-width: 1100px; margin: 0 auto; padding: 32px 24px 56px; }
-    .back { color: var(--muted); font-size: 13px; }
+    .page { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
+    .back {
+      color: var(--muted);
+      font-size: 13px;
+      transition: color 0.2s ease;
+    }
     .back:hover { color: var(--text); }
-    h1 { margin: 14px 0 6px; font-size: 26px; font-weight: 600; letter-spacing: -0.03em; }
+    .hero {
+      margin: 14px 0 8px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .kicker {
+      margin: 0;
+      color: var(--accent);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    h1 { margin: 8px 0 6px; font-size: 30px; font-weight: 600; letter-spacing: -0.04em; }
     .meta { color: var(--muted); margin: 0; font-size: 13px; }
     .controls { display: flex; gap: 16px; margin: 20px 0; }
-    label { display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
     select {
       background: var(--card);
       color: var(--text);
       border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 8px 10px;
+      border-radius: 10px;
+      padding: 9px 12px;
+      min-width: 200px;
+      outline: none;
+      transition: border-color 0.2s ease;
     }
-    .chart { height: 420px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 4px 0; }
+    select:hover, select:focus {
+      border-color: rgba(142, 171, 200, 0.35);
+    }
+    .chart-card {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 28%),
+        var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 8px 4px;
+    }
+    .chart { height: 420px; }
   `]
 })
 export class HistoryComponent implements OnInit {
@@ -90,8 +137,13 @@ export class HistoryComponent implements OnInit {
     }
 
     const first = [...grouped.entries()][0];
+    const color =
+      this.metricName === 'temp_c' ? METRIC_COLORS.temp
+      : this.metricName === 'used_pct' ? METRIC_COLORS.ram
+      : this.metricName === 'bytes_recv_per_s' ? METRIC_COLORS.net
+      : METRIC_COLORS.cpu;
     this.chart = first
-      ? historyChart(first[1], `${first[0]} ${this.metricName}`)
-      : historyChart([], this.metricName);
+      ? historyChart(first[1], `${first[0]} ${this.metricName}`, color)
+      : historyChart([], this.metricName, color);
   }
 }

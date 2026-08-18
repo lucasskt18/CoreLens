@@ -12,7 +12,7 @@
       </p>
     </div>
     <div class="status">
-      <span class="live">
+      <span class="live" [class.off]="!connected">
         <span class="dot" [class.on]="connected"></span>
         {{ connected ? 'Ao vivo' : 'Desconectado' }}
       </span>
@@ -35,7 +35,8 @@
       [value]="cpuValue"
       [options]="cpuChart"
       [hasSeries]="cpuHasSeries"
-      [progress]="cpuPct">
+      [progress]="cpuPct"
+      [accent]="colors.cpu">
     </app-metric-panel>
     <app-metric-panel
       kicker="RAM"
@@ -44,7 +45,8 @@
       [hint]="ramHint"
       [options]="ramChart"
       [hasSeries]="ramHasSeries"
-      [progress]="ramPct">
+      [progress]="ramPct"
+      [accent]="colors.ram">
     </app-metric-panel>
     <app-metric-panel
       kicker="Disco"
@@ -53,7 +55,8 @@
       [hint]="diskHint"
       [options]="diskChart"
       [hasSeries]="diskHasSeries"
-      [progress]="diskPct">
+      [progress]="diskPct"
+      [accent]="colors.disk">
     </app-metric-panel>
     <app-metric-panel
       kicker="Rede"
@@ -61,7 +64,8 @@
       [value]="netValue"
       [hint]="netHint"
       [options]="netChart"
-      [hasSeries]="netHasSeries">
+      [hasSeries]="netHasSeries"
+      [accent]="colors.net">
     </app-metric-panel>
     <app-metric-panel
       kicker="Térmico"
@@ -69,6 +73,7 @@
       [value]="tempValue"
       [options]="tempChart"
       [hasSeries]="tempHasSeries"
+      [accent]="colors.temp"
       hint="N/A se o serviço não estiver elevado">
     </app-metric-panel>
     <app-metric-panel
@@ -78,7 +83,8 @@
       [hint]="gpuHint || 'Sem GPU reportada'"
       [options]="gpuChart"
       [hasSeries]="gpuHasSeries"
-      [progress]="gpuPct">
+      [progress]="gpuPct"
+      [accent]="colors.gpu">
     </app-metric-panel>
   </div>
 
