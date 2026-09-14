@@ -16,10 +16,29 @@ export class MetricsService {
   readonly alerts$ = new BehaviorSubject<AlertEventDto[]>([]);
   readonly latest = new Map<string, number>();
 
-  async connect(computerId: string): Promise<void> {
-    if (this.computerId === computerId && this.connection) {
-      return;
+    seed(points: { time: string; componentStableKey: string; name: string; value: number }[]): void {
+      for (const point of points) {
+        const key = this.key(point.componentStableKey, point.name);
+        this.latest.set(key, point.value);
+        const series = this.series.get(key) ?? [];
+        series.push({ time: new Date(point.time).getTime(), value: point.value });
+        if (series.length > MAX_POINTS) {
+          series.splice(0, series.length - MAX_POINTS);
+        }
+        this.series.set(key, series);
+      }
+
+      for (const series of this.series.values()) {
+        series.sort((a, b) => a.time - b.time);
+      }
+
+      this.tick$.next(null);
     }
+
+    async connect(computerId: string): Promise<void> {
+      if (this.computerId === computerId && this.connection) {
+        return;
+      }
 
     await this.disconnect();
     this.computerId = computerId;

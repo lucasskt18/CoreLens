@@ -39,24 +39,49 @@ public sealed class LibreHardwareMonitorCollector : IMetricCollector, IDisposabl
     public string Name => "sensors";
     public TimeSpan Interval => TimeSpan.FromSeconds(1);
 
+    private readonly object _gate = new();
+    private List<ComponentInventoryDto> _components = [];
+    private List<MetricSampleDto> _samples = [];
+    private int _busy;
+
     public void Collect(CollectorSnapshot snapshot)
     {
-        if (!_opened)
+        if (_opened && Interlocked.CompareExchange(ref _busy, 1, 0) == 0)
         {
-            return;
+            _ = Task.Run(Refresh);
         }
 
+        lock (_gate)
+        {
+            snapshot.Components.AddRange(_components);
+            snapshot.Samples.AddRange(_samples);
+        }
+    }
+
+    private void Refresh()
+    {
         try
         {
+            var next = new CollectorSnapshot();
             _computer.Accept(_visitor);
             foreach (var hardware in _computer.Hardware)
             {
-                VisitHardware(hardware, snapshot);
+                VisitHardware(hardware, next);
+            }
+
+            lock (_gate)
+            {
+                _components = [.. next.Components];
+                _samples = [.. next.Samples];
             }
         }
         catch (Exception ex)
         {
             _logger.LogDebug(ex, "LibreHardwareMonitor update failed.");
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _busy, 0);
         }
     }
 

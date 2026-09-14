@@ -8,17 +8,27 @@ import { METRIC_COLORS } from '../core/chart.util';
   standalone: true,
   imports: [NgxEchartsDirective],
   template: `
-    <section class="panel" [style.--metric]="accent">
+    <section class="panel" [class.capacity]="mode === 'capacity'" [style.--metric]="accent">
       <header>
         <div>
           <p class="kicker">{{ kicker }}</p>
           <h2>{{ title }}</h2>
         </div>
-        <div class="value">{{ value }}</div>
+        <div class="reading">
+          <div class="value">{{ value }}</div>
+          @if (secondaryValue) {
+            <div class="secondary">
+              @if (secondaryLabel) {
+                <span class="secondary-label">{{ secondaryLabel }}</span>
+              }
+              <span>{{ secondaryValue }}</span>
+            </div>
+          }
+        </div>
       </header>
 
       @if (progress != null) {
-        <div class="track" aria-hidden="true">
+        <div class="track" [class.thick]="mode === 'capacity'" aria-hidden="true">
           <div
             class="fill"
             [class.warn]="progressLevel === 'warn'"
@@ -28,18 +38,24 @@ import { METRIC_COLORS } from '../core/chart.util';
         </div>
       }
 
-      <div class="chart-wrap">
-        @if (hasSeries && initOptions) {
-          <div echarts [options]="initOptions" [merge]="options" class="chart"></div>
-        } @else {
-          <div class="empty-state">
-            <svg viewBox="0 0 160 48" class="ghost" aria-hidden="true">
-              <path d="M0 34 C18 34 22 18 40 22 C58 26 62 10 82 16 C102 22 108 30 128 24 C142 20 150 18 160 14" />
-            </svg>
-            <p class="empty">{{ emptyText }}</p>
-          </div>
-        }
-      </div>
+      @if (mode === 'capacity') {
+        <div class="capacity-body">
+          <p class="capacity-label">{{ capacityLabel || '—' }}</p>
+        </div>
+      } @else {
+        <div class="chart-wrap">
+          @if (hasSeries && initOptions) {
+            <div echarts [options]="initOptions" [merge]="options" class="chart"></div>
+          } @else {
+            <div class="empty-state">
+              <svg viewBox="0 0 160 48" class="ghost" aria-hidden="true">
+                <path d="M0 34 C18 34 22 18 40 22 C58 26 62 10 82 16 C102 22 108 30 128 24 C142 20 150 18 160 14" />
+              </svg>
+              <p class="empty">{{ emptyText }}</p>
+            </div>
+          }
+        </div>
+      }
 
       @if (hint) {
         <p class="hint">{{ hint }}</p>
@@ -94,6 +110,9 @@ import { METRIC_COLORS } from '../core/chart.util';
       color: var(--text);
       letter-spacing: -0.01em;
     }
+    .reading {
+      text-align: right;
+    }
     .value {
       font-family: "IBM Plex Mono", ui-monospace, monospace;
       font-size: 28px;
@@ -103,12 +122,33 @@ import { METRIC_COLORS } from '../core/chart.util';
       line-height: 1.05;
       font-variant-numeric: tabular-nums;
     }
+    .secondary {
+      margin-top: 6px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: baseline;
+      gap: 6px;
+      color: var(--muted);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+    .secondary-label {
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 10px;
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+    }
     .track {
       margin-top: 14px;
       height: 3px;
       border-radius: 99px;
       background: var(--track);
       overflow: hidden;
+    }
+    .track.thick {
+      height: 8px;
+      margin-top: 18px;
     }
     .fill {
       height: 100%;
@@ -118,6 +158,21 @@ import { METRIC_COLORS } from '../core/chart.util';
     }
     .fill.warn { background: var(--warning); }
     .fill.hot { background: var(--critical); }
+    .capacity-body {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      padding-top: 24px;
+    }
+    .capacity-label {
+      margin: 0;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
     .chart-wrap {
       flex: 1;
       min-height: 118px;
@@ -178,6 +233,10 @@ export class MetricPanelComponent implements OnChanges {
   @Input() hasSeries = false;
   @Input() progress: number | null = null;
   @Input() accent: string = METRIC_COLORS.cpu;
+  @Input() mode: 'sparkline' | 'capacity' = 'sparkline';
+  @Input() secondaryValue = '';
+  @Input() secondaryLabel = '';
+  @Input() capacityLabel = '';
 
   initOptions: EChartsOption | null = null;
 
@@ -202,6 +261,10 @@ export class MetricPanelComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (this.mode === 'capacity') {
+      this.initOptions = null;
+      return;
+    }
     if (changes['hasSeries'] && !this.hasSeries) {
       this.initOptions = null;
       return;

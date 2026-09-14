@@ -38,6 +38,9 @@
       kicker="CPU"
       title="Utilização"
       [value]="cpuValue"
+      [secondaryLabel]="'temp'"
+      [secondaryValue]="tempValue"
+      [hint]="tempHint"
       [options]="cpuChart"
       [hasSeries]="cpuHasSeries"
       [progress]="cpuPct"
@@ -46,20 +49,19 @@
     <app-metric-panel
       kicker="RAM"
       title="Memória"
+      mode="capacity"
       [value]="ramValue"
-      [hint]="ramHint"
-      [options]="ramChart"
-      [hasSeries]="ramHasSeries"
+      [capacityLabel]="ramCapacity"
       [progress]="ramPct"
       [accent]="colors.ram">
     </app-metric-panel>
     <app-metric-panel
       kicker="Disco"
       title="Espaço usado"
+      mode="capacity"
       [value]="diskValue"
+      [capacityLabel]="diskCapacity"
       [hint]="diskHint"
-      [options]="diskChart"
-      [hasSeries]="diskHasSeries"
       [progress]="diskPct"
       [accent]="colors.disk">
     </app-metric-panel>
@@ -73,19 +75,11 @@
       [accent]="colors.net">
     </app-metric-panel>
     <app-metric-panel
-      kicker="Térmico"
-      title="CPU temp"
-      [value]="tempValue"
-      [hint]="tempHint"
-      [options]="tempChart"
-      [hasSeries]="tempHasSeries"
-      emptyText="Sem leitura de temperatura"
-      [accent]="colors.temp">
-    </app-metric-panel>
-    <app-metric-panel
       kicker="GPU"
-      title="Load / temp"
+      title="Load"
       [value]="gpuValue"
+      [secondaryLabel]="gpuTemp ? 'temp' : ''"
+      [secondaryValue]="gpuTemp"
       [hint]="gpuHint"
       [options]="gpuChart"
       [hasSeries]="gpuHasSeries"
@@ -93,18 +87,13 @@
       [emptyText]="gpuHint ? 'Aguardando amostras' : 'Sem GPU reportada'"
       [accent]="colors.gpu">
     </app-metric-panel>
-  </div>
 
-  <div class="lower">
-    <section class="panel">
+    <section class="panel alerts-card">
       <h2>Alertas</h2>
       @if (alerts.length === 0) {
         <div class="healthy">
           <span class="pip"></span>
-          <div>
-            <p class="healthy-title">Sistema estável</p>
-            <p class="empty">Sem eventos agora. Dispara em CPU &gt; 90% / 30s, temp &gt; 80°C ou RAM &gt; 90%.</p>
-          </div>
+          <p class="healthy-title">Sistema estável</p>
         </div>
       } @else {
         <ul>
@@ -118,12 +107,14 @@
         </ul>
       }
     </section>
-    <section class="panel">
-      <h2>Insights</h2>
+  </div>
+
+  @if (showInsights) {
+    <div class="insights">
       @for (insight of insights; track insight.title) {
         <p class="insight-title">{{ insight.title }}</p>
         <p class="empty">{{ insight.summary }}</p>
       }
-    </section>
-  </div>
+    </div>
+  }
 </div>

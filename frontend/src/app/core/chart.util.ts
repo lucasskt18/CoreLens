@@ -1,5 +1,5 @@
 import * as echarts from 'echarts';
-import { EChartsOption } from 'echarts';
+import { EChartsOption, LineSeriesOption } from 'echarts';
 import { SeriesPoint } from '../core/models';
 
 export const METRIC_COLORS = {
@@ -87,6 +87,29 @@ function seriesData(points: SeriesPoint[], color: string) {
   }));
 }
 
+function lineSeries(
+  id: string,
+  name: string,
+  points: SeriesPoint[],
+  color: string,
+  fill: boolean
+): LineSeriesOption {
+  return {
+    id,
+    name,
+    type: 'line',
+    showSymbol: true,
+    smooth: 0.28,
+    smoothMonotone: 'x',
+    sampling: 'lttb',
+    connectNulls: true,
+    data: seriesData(points, color),
+    lineStyle: { width: 2, color },
+    areaStyle: fill ? { color: areaFill(color) } : undefined,
+    emphasis: { scale: false, lineStyle: { width: 2.2 } }
+  };
+}
+
 export function sparkline(
   points: SeriesPoint[],
   kind: SparklineKind = 'series',
@@ -104,26 +127,31 @@ export function sparkline(
     xAxis: { type: 'time', show: false },
     yAxis,
     tooltip: tooltipBase(),
+    series: [lineSeries('spark', '', points, color, true)]
+  };
+}
+
+const NET_UP_COLOR = '#9db8ce';
+
+export function sparklinePair(
+  down: SeriesPoint[],
+  up: SeriesPoint[],
+  downColor: string = METRIC_COLORS.net,
+  upColor: string = NET_UP_COLOR
+): EChartsOption {
+  return {
+    ...animationBlock(),
+    backgroundColor: 'transparent',
+    grid: { left: 2, right: 6, top: 12, bottom: 2 },
+    xAxis: { type: 'time', show: false },
+    yAxis: { type: 'value', min: 0, scale: true, show: false },
+    tooltip: {
+      ...tooltipBase(),
+      valueFormatter: (value) => typeof value === 'number' ? `${formatBytes(value)}/s` : String(value ?? '')
+    },
     series: [
-      {
-        id: 'spark',
-        type: 'line',
-        showSymbol: true,
-        smooth: 0.28,
-        smoothMonotone: 'x',
-        sampling: 'lttb',
-        connectNulls: true,
-        data: seriesData(points, color),
-        lineStyle: {
-          width: 2,
-          color
-        },
-        areaStyle: { color: areaFill(color) },
-        emphasis: {
-          scale: false,
-          lineStyle: { width: 2.2 }
-        }
-      }
+      lineSeries('down', 'Download', down, downColor, true),
+      lineSeries('up', 'Envio', up, upColor, false)
     ]
   };
 }
