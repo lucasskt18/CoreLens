@@ -8,28 +8,54 @@ import { METRIC_COLORS } from '../core/chart.util';
   standalone: true,
   imports: [NgxEchartsDirective],
   template: `
-    <section class="panel" [style.--metric]="accent">
+    <section class="panel" [class.capacity]="mode === 'capacity'" [style.--metric]="accent">
       <header>
         <div>
           <p class="kicker">{{ kicker }}</p>
           <h2>{{ title }}</h2>
         </div>
-        <div class="value">{{ value }}</div>
+        <div class="reading">
+          <div class="value">{{ value }}</div>
+          @if (secondaryValue) {
+            <div class="secondary">
+              @if (secondaryLabel) {
+                <span class="secondary-label">{{ secondaryLabel }}</span>
+              }
+              <span>{{ secondaryValue }}</span>
+            </div>
+          }
+        </div>
       </header>
 
       @if (progress != null) {
-        <div class="track" aria-hidden="true">
-          <div class="fill" [style.width.%]="clampedProgress"></div>
+        <div class="track" [class.thick]="mode === 'capacity'" aria-hidden="true">
+          <div
+            class="fill"
+            [class.warn]="progressLevel === 'warn'"
+            [class.hot]="progressLevel === 'hot'"
+            [style.width.%]="clampedProgress">
+          </div>
         </div>
       }
 
-      <div class="chart-wrap">
-        @if (hasSeries && initOptions) {
-          <div echarts [options]="initOptions" [merge]="options" class="chart"></div>
-        } @else {
-          <p class="empty">Sem série no momento</p>
-        }
-      </div>
+      @if (mode === 'capacity') {
+        <div class="capacity-body">
+          <p class="capacity-label">{{ capacityLabel || '—' }}</p>
+        </div>
+      } @else {
+        <div class="chart-wrap">
+          @if (hasSeries && initOptions) {
+            <div echarts [options]="initOptions" [merge]="options" class="chart"></div>
+          } @else {
+            <div class="empty-state">
+              <svg viewBox="0 0 160 48" class="ghost" aria-hidden="true">
+                <path d="M0 34 C18 34 22 18 40 22 C58 26 62 10 82 16 C102 22 108 30 128 24 C142 20 150 18 160 14" />
+              </svg>
+              <p class="empty">{{ emptyText }}</p>
+            </div>
+          }
+        </div>
+      }
 
       @if (hint) {
         <p class="hint">{{ hint }}</p>
@@ -40,33 +66,28 @@ import { METRIC_COLORS } from '../core/chart.util';
     .panel {
       --metric: ${METRIC_COLORS.cpu};
       position: relative;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.028), transparent 42%),
-        var(--card);
+      background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 16px 16px 12px;
-      min-height: 244px;
+      border-radius: var(--radius);
+      padding: 18px 18px 14px;
+      min-height: 248px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      transition: border-color 0.28s ease, transform 0.28s ease, box-shadow 0.28s ease;
+      transition: border-color 0.22s ease, background 0.22s ease;
     }
     .panel::before {
       content: "";
       position: absolute;
       inset: 0 auto auto 0;
       width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, var(--metric), transparent 72%);
-      opacity: 0.7;
+      height: 1px;
+      background: linear-gradient(90deg, var(--metric), transparent 64%);
+      opacity: 0.55;
     }
     .panel:hover {
-      border-color: color-mix(in srgb, var(--metric) 42%, var(--line));
-      transform: translateY(-2px);
-      box-shadow:
-        0 14px 36px rgba(0, 0, 0, 0.28),
-        0 0 0 1px color-mix(in srgb, var(--metric) 18%, transparent);
+      border-color: var(--line-strong);
+      background: var(--card-elevated);
     }
     header {
       display: flex;
@@ -78,54 +99,112 @@ import { METRIC_COLORS } from '../core/chart.util';
       margin: 0;
       color: var(--metric);
       font-size: 11px;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       font-weight: 600;
     }
     h2 {
-      margin: 5px 0 0;
+      margin: 6px 0 0;
       font-size: 14px;
       font-weight: 500;
       color: var(--text);
       letter-spacing: -0.01em;
     }
+    .reading {
+      text-align: right;
+    }
     .value {
       font-family: "IBM Plex Mono", ui-monospace, monospace;
-      font-size: 26px;
+      font-size: 28px;
       font-weight: 500;
       color: var(--text);
-      letter-spacing: -0.05em;
+      letter-spacing: -0.04em;
       line-height: 1.05;
       font-variant-numeric: tabular-nums;
-      text-shadow: 0 0 24px color-mix(in srgb, var(--metric) 35%, transparent);
+    }
+    .secondary {
+      margin-top: 6px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: baseline;
+      gap: 6px;
+      color: var(--muted);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+    .secondary-label {
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 10px;
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
     }
     .track {
       margin-top: 14px;
-      height: 4px;
+      height: 3px;
       border-radius: 99px;
       background: var(--track);
       overflow: hidden;
     }
+    .track.thick {
+      height: 8px;
+      margin-top: 18px;
+    }
     .fill {
       height: 100%;
-      background: linear-gradient(90deg, color-mix(in srgb, var(--metric) 72%, #1a1d22), var(--metric));
+      background: var(--metric);
       border-radius: 99px;
-      box-shadow: 0 0 12px color-mix(in srgb, var(--metric) 45%, transparent);
-      transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease;
+    }
+    .fill.warn { background: var(--warning); }
+    .fill.hot { background: var(--critical); }
+    .capacity-body {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      padding-top: 24px;
+    }
+    .capacity-label {
+      margin: 0;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
     }
     .chart-wrap {
       flex: 1;
       min-height: 118px;
-      margin-top: 10px;
+      margin-top: 12px;
       display: flex;
       align-items: stretch;
     }
     .chart { width: 100%; height: 118px; }
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .ghost {
+      width: 100%;
+      max-width: 180px;
+      height: 40px;
+      opacity: 0.28;
+    }
+    .ghost path {
+      fill: none;
+      stroke: var(--muted);
+      stroke-width: 1.4;
+      stroke-linecap: round;
+    }
     .empty {
-      margin: auto;
+      margin: 0;
       color: var(--muted);
       font-size: 12px;
-      letter-spacing: 0.01em;
     }
     .hint {
       margin: 8px 0 0;
@@ -138,10 +217,8 @@ import { METRIC_COLORS } from '../core/chart.util';
     }
     @media (prefers-reduced-motion: reduce) {
       .panel,
-      .panel:hover,
       .fill {
         transition: none;
-        transform: none;
       }
     }
   `]
@@ -151,10 +228,15 @@ export class MetricPanelComponent implements OnChanges {
   @Input({ required: true }) title = '';
   @Input() value = '—';
   @Input() hint = '';
+  @Input() emptyText = 'Aguardando amostras';
   @Input() options: EChartsOption = {};
   @Input() hasSeries = false;
   @Input() progress: number | null = null;
   @Input() accent: string = METRIC_COLORS.cpu;
+  @Input() mode: 'sparkline' | 'capacity' = 'sparkline';
+  @Input() secondaryValue = '';
+  @Input() secondaryLabel = '';
+  @Input() capacityLabel = '';
 
   initOptions: EChartsOption | null = null;
 
@@ -165,7 +247,24 @@ export class MetricPanelComponent implements OnChanges {
     return Math.min(100, Math.max(0, this.progress));
   }
 
+  get progressLevel(): 'ok' | 'warn' | 'hot' | null {
+    if (this.progress == null) {
+      return null;
+    }
+    if (this.progress >= 90) {
+      return 'hot';
+    }
+    if (this.progress >= 75) {
+      return 'warn';
+    }
+    return 'ok';
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
+    if (this.mode === 'capacity') {
+      this.initOptions = null;
+      return;
+    }
     if (changes['hasSeries'] && !this.hasSeries) {
       this.initOptions = null;
       return;

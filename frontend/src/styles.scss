@@ -1,26 +1,32 @@
 :root {
-  --bg: #07080b;
-  --card: #11151b;
-  --line: rgba(255, 255, 255, 0.075);
-  --text: #e8eaed;
-  --muted: #8b919a;
-  --chart: #6eb5d8;
-  --track: rgba(255, 255, 255, 0.07);
-  --accent: #c5d4e4;
+  --bg: #0a0c10;
+  --card: #12161d;
+  --card-elevated: #171c24;
+  --line: rgba(232, 236, 241, 0.08);
+  --line-strong: rgba(232, 236, 241, 0.14);
+  --text: #eef1f4;
+  --muted: #8f98a3;
+  --chart: #6ea8c9;
+  --track: rgba(255, 255, 255, 0.06);
+  --accent: #9db8ce;
   --warning: #d4b07a;
   --critical: #d4897a;
-  --ok: #6ea58a;
+  --ok: #7db89a;
+  --radius: 16px;
+  --radius-sm: 10px;
 }
 
 * { box-sizing: border-box; }
+
+html {
+  color-scheme: dark;
+}
 
 html, body {
   margin: 0;
   min-height: 100%;
   background:
-    radial-gradient(980px 480px at 6% -18%, rgba(110, 181, 216, 0.09), transparent 52%),
-    radial-gradient(760px 420px at 100% -8%, rgba(155, 143, 212, 0.06), transparent 48%),
-    radial-gradient(640px 380px at 70% 110%, rgba(94, 196, 182, 0.04), transparent 50%),
+    radial-gradient(920px 480px at 8% -22%, rgba(110, 160, 196, 0.08), transparent 58%),
     var(--bg);
   color: var(--text);
   font-family: "IBM Plex Sans", system-ui, sans-serif;
@@ -28,7 +34,7 @@ html, body {
 }
 
 ::selection {
-  background: rgba(110, 181, 216, 0.28);
+  background: rgba(110, 168, 201, 0.28);
   color: var(--text);
 }
 
