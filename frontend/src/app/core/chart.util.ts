@@ -3,20 +3,20 @@ import { EChartsOption } from 'echarts';
 import { SeriesPoint } from '../core/models';
 
 export const METRIC_COLORS = {
-  cpu: '#6eb5d8',
-  ram: '#9b8fd4',
-  disk: '#d4b07a',
-  net: '#5ec4b6',
-  temp: '#d4897a',
-  gpu: '#7ec99a'
+  cpu: '#6ea8c9',
+  ram: '#8f86c4',
+  disk: '#c9a66c',
+  net: '#5bb3a8',
+  temp: '#c8887c',
+  gpu: '#74c08f'
 } as const;
 
 export type MetricTone = keyof typeof METRIC_COLORS;
 
-const TOOLTIP_BG = '#12151c';
-const TOOLTIP_TEXT = '#e8eaed';
-const AXIS = '#7a828c';
-const GRID = 'rgba(255, 255, 255, 0.055)';
+const TOOLTIP_BG = '#171c24';
+const TOOLTIP_TEXT = '#eef1f4';
+const AXIS = '#8f98a3';
+const GRID = 'rgba(255, 255, 255, 0.06)';
 const DEFAULT_LINE = METRIC_COLORS.cpu;
 
 export type SparklineKind = 'percent' | 'series' | 'temp';
@@ -33,9 +33,9 @@ function hexToRgba(hex: string, alpha: number): string {
 
 function areaFill(color: string): echarts.graphic.LinearGradient {
   return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-    { offset: 0, color: hexToRgba(color, 0.38) },
-    { offset: 0.55, color: hexToRgba(color, 0.12) },
-    { offset: 1, color: hexToRgba(color, 0.01) }
+    { offset: 0, color: hexToRgba(color, 0.22) },
+    { offset: 0.7, color: hexToRgba(color, 0.05) },
+    { offset: 1, color: hexToRgba(color, 0) }
   ]);
 }
 
@@ -64,7 +64,7 @@ function tooltipBase(): EChartsOption['tooltip'] {
     borderColor: 'rgba(255, 255, 255, 0.08)',
     padding: [8, 12],
     textStyle: { color: TOOLTIP_TEXT, fontSize: 12, fontFamily: 'IBM Plex Sans, sans-serif' },
-    extraCssText: 'box-shadow: 0 12px 32px rgba(0,0,0,.45); border-radius: 10px;',
+    extraCssText: 'box-shadow: 0 10px 28px rgba(0,0,0,.4); border-radius: 10px;',
     axisPointer: {
       type: 'line',
       lineStyle: { color: 'rgba(255, 255, 255, 0.18)', width: 1, type: 'dashed' }
@@ -78,11 +78,11 @@ function seriesData(points: SeriesPoint[], color: string) {
   return points.map((p, i) => ({
     value: [p.time, p.value],
     symbol: i === last ? 'circle' : 'none',
-    symbolSize: i === last ? 7 : 0,
+    symbolSize: i === last ? 5 : 0,
     itemStyle: {
       color,
-      shadowBlur: i === last ? 14 : 0,
-      shadowColor: hexToRgba(color, 0.85)
+      shadowBlur: i === last ? 6 : 0,
+      shadowColor: hexToRgba(color, 0.45)
     }
   }));
 }
@@ -115,19 +115,13 @@ export function sparkline(
         connectNulls: true,
         data: seriesData(points, color),
         lineStyle: {
-          width: 2.2,
-          color,
-          shadowColor: hexToRgba(color, 0.45),
-          shadowBlur: 10
+          width: 2,
+          color
         },
         areaStyle: { color: areaFill(color) },
         emphasis: {
           scale: false,
-          lineStyle: {
-            width: 2.6,
-            shadowBlur: 16,
-            shadowColor: hexToRgba(color, 0.55)
-          }
+          lineStyle: { width: 2.2 }
         }
       }
     ]
@@ -138,10 +132,7 @@ export function historyChart(points: SeriesPoint[], label: string, color: string
   return {
     ...animationBlock(),
     backgroundColor: 'transparent',
-    tooltip: {
-      ...tooltipBase(),
-      extraCssText: 'box-shadow: 0 12px 32px rgba(0,0,0,.45); border-radius: 10px;'
-    },
+    tooltip: tooltipBase(),
     grid: { left: 48, right: 16, top: 20, bottom: 32 },
     xAxis: {
       type: 'time',
@@ -167,10 +158,8 @@ export function historyChart(points: SeriesPoint[], label: string, color: string
         sampling: 'lttb',
         data: points.map(p => [p.time, p.value]),
         lineStyle: {
-          width: 2.2,
-          color,
-          shadowColor: hexToRgba(color, 0.35),
-          shadowBlur: 8
+          width: 2,
+          color
         },
         areaStyle: { color: areaFill(color) }
       }
@@ -202,4 +191,31 @@ export function formatTemp(value?: number): string {
 
 export function formatRate(value?: number): string {
   return value == null ? '—' : `${formatBytes(value)}/s`;
+}
+
+export function friendlyComponentLabel(key?: string): string {
+  if (!key) {
+    return '';
+  }
+
+  const lower = key.toLowerCase();
+  if (lower.startsWith('disk:')) {
+    return `Disco ${key.slice(5).toUpperCase()}`;
+  }
+  if (lower.startsWith('net:')) {
+    return key.slice(4);
+  }
+  if (lower.includes('nvidia')) {
+    return 'NVIDIA';
+  }
+  if (lower.includes('radeon') || /\bamd\b/.test(lower)) {
+    return 'AMD';
+  }
+  if (lower.includes('intel')) {
+    return 'Intel';
+  }
+  if (lower.startsWith('gpu:')) {
+    return key.slice(4).replace(/[-_]+/g, ' ');
+  }
+  return key;
 }

@@ -1,15 +1,20 @@
 <div class="page">
   <header class="hero">
-    <div>
-      <p class="kicker">CoreLens</p>
-      <h1>{{ computer?.hostname || 'Aguardando agent' }}</h1>
-      <p class="meta">
+    <div class="identity">
+      <span class="mark" aria-hidden="true"></span>
+      <div>
+        <p class="kicker">CoreLens</p>
+        <h1>{{ computer?.hostname || 'Aguardando agent' }}</h1>
         @if (computer) {
-          {{ computer.osVersion }} · agent {{ computer.agentVersion }} · visto {{ computer.lastSeenAt | date:'HH:mm:ss' }}
+          <div class="chips">
+            <span>{{ computer.osVersion }}</span>
+            <span>agent {{ computer.agentVersion }}</span>
+            <span>visto {{ computer.lastSeenAt | date:'HH:mm:ss' }}</span>
+          </div>
         } @else {
-          O Hardware Agent ainda não enviou inventário.
+          <p class="meta">O Hardware Agent ainda não enviou inventário.</p>
         }
-      </p>
+      </div>
     </div>
     <div class="status">
       <span class="live" [class.off]="!connected">
@@ -71,19 +76,21 @@
       kicker="Térmico"
       title="CPU temp"
       [value]="tempValue"
+      [hint]="tempHint"
       [options]="tempChart"
       [hasSeries]="tempHasSeries"
-      [accent]="colors.temp"
-      hint="N/A se o serviço não estiver elevado">
+      emptyText="Sem leitura de temperatura"
+      [accent]="colors.temp">
     </app-metric-panel>
     <app-metric-panel
       kicker="GPU"
       title="Load / temp"
       [value]="gpuValue"
-      [hint]="gpuHint || 'Sem GPU reportada'"
+      [hint]="gpuHint"
       [options]="gpuChart"
       [hasSeries]="gpuHasSeries"
       [progress]="gpuPct"
+      [emptyText]="gpuHint ? 'Aguardando amostras' : 'Sem GPU reportada'"
       [accent]="colors.gpu">
     </app-metric-panel>
   </div>
@@ -92,7 +99,13 @@
     <section class="panel">
       <h2>Alertas</h2>
       @if (alerts.length === 0) {
-        <p class="empty">Nenhum alerta. Regras padrão: CPU &gt; 90% / 30s, temp &gt; 80°C, RAM &gt; 90%.</p>
+        <div class="healthy">
+          <span class="pip"></span>
+          <div>
+            <p class="healthy-title">Sistema estável</p>
+            <p class="empty">Sem eventos agora. Dispara em CPU &gt; 90% / 30s, temp &gt; 80°C ou RAM &gt; 90%.</p>
+          </div>
+        </div>
       } @else {
         <ul>
           @for (alert of alerts; track alert.id) {

@@ -121,7 +121,7 @@ interface PopupRow {
     }
     .fill {
       height: 100%;
-      --metric: #6eb5d8;
+      --metric: #6ea8c9;
       background: linear-gradient(90deg, color-mix(in srgb, var(--metric) 70%, #1a1d22), var(--metric));
       transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
     }

@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { EChartsOption } from 'echarts';
 import { MetricPanelComponent } from '../components/metric-panel.component';
 import { ApiService } from '../core/api.service';
-import { METRIC_COLORS, formatBytes, formatPct, formatRate, formatTemp, sparkline } from '../core/chart.util';
+import { METRIC_COLORS, formatBytes, formatPct, formatRate, formatTemp, friendlyComponentLabel, sparkline } from '../core/chart.util';
 import { MetricsService } from '../core/metrics.service';
 import { AlertEventDto, ComputerSummary, InsightDto } from '../core/models';
 import { PopupWindowService } from '../core/popup-window.service';
@@ -44,6 +44,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   diskHint = '';
   netHint = '';
   gpuHint = '';
+  tempHint = '';
   cpuPct: number | null = null;
   ramPct: number | null = null;
   diskPct: number | null = null;
@@ -100,7 +101,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
         await this.metrics.connect(selected.id);
         this.alerts = await this.api.getAlerts(selected.id);
         this.metrics.alerts$.next(this.alerts);
-        this.insights = await this.api.getInsights(selected.id);
+        this.insights = (await this.api.getInsights(selected.id)).map(insight =>
+          insight.provider === 'none'
+            ? {
+                ...insight,
+                title: 'Em breve',
+                summary: 'Análise automática por modelo fica para a próxima etapa. As métricas continuam sendo coletadas normalmente.'
+              }
+            : insight
+        );
       }
     } catch (err) {
       this.error = 'API indisponível. Suba a Core API e o TimescaleDB.';
@@ -125,6 +134,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.cpuHasSeries = cpuSeries.length > 1;
     this.ramHasSeries = ramSeries.length > 1;
     this.tempHasSeries = tempSeries.length > 1;
+    this.tempHint = this.tempHasSeries ? '' : 'Requer o agent em modo elevado';
     this.cpuChart = sparkline(cpuSeries, 'percent', METRIC_COLORS.cpu);
     this.ramChart = sparkline(ramSeries, 'percent', METRIC_COLORS.ram);
     this.tempChart = sparkline(tempSeries, 'temp', METRIC_COLORS.temp);
@@ -134,7 +144,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const diskSeries = this.metrics.getSeries(diskKey, 'used_pct');
       this.diskPct = this.metrics.getLatest(diskKey, 'used_pct') ?? null;
       this.diskValue = formatPct(this.diskPct ?? undefined);
-      this.diskHint = diskKey;
+      this.diskHint = friendlyComponentLabel(diskKey);
       this.diskHasSeries = diskSeries.length > 1;
       this.diskChart = sparkline(diskSeries, 'percent', METRIC_COLORS.disk);
     }
@@ -145,7 +155,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const down = this.metrics.getLatest(netKey, 'bytes_recv_per_s');
       const up = this.metrics.getLatest(netKey, 'bytes_sent_per_s');
       this.netValue = formatRate(down);
-      this.netHint = `up ${formatRate(up)} · ${netKey}`;
+      this.netHint = `envio ${formatRate(up)} · ${friendlyComponentLabel(netKey)}`;
       this.netHasSeries = netSeries.length > 1;
       this.netChart = sparkline(netSeries, 'series', METRIC_COLORS.net);
     }
@@ -157,7 +167,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const gpuSeries = this.metrics.getSeries(gpuKey, gpuMetric);
       this.gpuValue = load == null ? formatTemp(this.metrics.getLatest(gpuKey, 'temp_c')) : formatPct(load);
       this.gpuPct = load ?? null;
-      this.gpuHint = gpuKey;
+      this.gpuHint = friendlyComponentLabel(gpuKey);
       this.gpuHasSeries = gpuSeries.length > 1;
       this.gpuChart = sparkline(gpuSeries, load == null ? 'temp' : 'percent', METRIC_COLORS.gpu);
     }

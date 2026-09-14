@@ -48,7 +48,7 @@ import { ComputerSummary, SeriesPoint } from '../core/models';
     </div>
   `,
   styles: [`
-    .page { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
+    .page { max-width: 1240px; margin: 0 auto; padding: 36px 28px 72px; }
     .back {
       color: var(--muted);
       font-size: 13px;
@@ -56,7 +56,7 @@ import { ComputerSummary, SeriesPoint } from '../core/models';
     }
     .back:hover { color: var(--text); }
     .hero {
-      margin: 14px 0 8px;
+      margin: 16px 0 8px;
       padding-bottom: 18px;
       border-bottom: 1px solid var(--line);
     }
@@ -68,7 +68,7 @@ import { ComputerSummary, SeriesPoint } from '../core/models';
       font-size: 11px;
       font-weight: 600;
     }
-    h1 { margin: 8px 0 6px; font-size: 30px; font-weight: 600; letter-spacing: -0.04em; }
+    h1 { margin: 8px 0 6px; font-size: 28px; font-weight: 600; letter-spacing: -0.04em; }
     .meta { color: var(--muted); margin: 0; font-size: 13px; }
     .controls { display: flex; gap: 16px; margin: 20px 0; }
     label {
@@ -85,22 +85,20 @@ import { ComputerSummary, SeriesPoint } from '../core/models';
       background: var(--card);
       color: var(--text);
       border: 1px solid var(--line);
-      border-radius: 10px;
+      border-radius: var(--radius-sm);
       padding: 9px 12px;
       min-width: 200px;
       outline: none;
       transition: border-color 0.2s ease;
     }
     select:hover, select:focus {
-      border-color: rgba(142, 171, 200, 0.35);
+      border-color: var(--line-strong);
     }
     .chart-card {
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 28%),
-        var(--card);
+      background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 10px 8px 4px;
+      border-radius: var(--radius);
+      padding: 12px 10px 6px;
     }
     .chart { height: 420px; }
   `]
