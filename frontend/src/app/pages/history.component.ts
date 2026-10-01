@@ -1,7 +1,5 @@
-import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { ApiService } from '../core/api.service';
@@ -11,15 +9,14 @@ import { ComputerSummary, SeriesPoint } from '../core/models';
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [RouterLink, FormsModule, NgxEchartsDirective, DatePipe],
+  imports: [FormsModule, NgxEchartsDirective],
   template: `
     <div class="page">
-      <a routerLink="/" class="back">← Dashboard</a>
       <header class="hero">
         <div>
-          <p class="kicker">CoreLens</p>
+          <p class="kicker">{{ computer?.hostname || 'Aguardando agent' }}</p>
           <h1>Histórico</h1>
-          <p class="meta">{{ computer?.hostname || 'Aguardando agent' }} · bucket {{ bucket }}</p>
+          <p class="meta">Agregação {{ bucket }}</p>
         </div>
       </header>
 
@@ -48,29 +45,24 @@ import { ComputerSummary, SeriesPoint } from '../core/models';
     </div>
   `,
   styles: [`
-    .page { max-width: 1240px; margin: 0 auto; padding: 36px 28px 72px; }
-    .back {
-      color: var(--muted);
-      font-size: 13px;
-      transition: color 0.2s ease;
-    }
-    .back:hover { color: var(--text); }
-    .hero {
-      margin: 16px 0 8px;
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--line);
-    }
+    .page { padding-top: 24px; }
+    .hero { margin-bottom: 20px; }
     .kicker {
       margin: 0;
-      color: var(--accent);
-      letter-spacing: 0.16em;
+      color: var(--muted);
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       font-size: 11px;
       font-weight: 600;
     }
-    h1 { margin: 8px 0 6px; font-size: 28px; font-weight: 600; letter-spacing: -0.04em; }
+    h1 {
+      margin: 6px 0 8px;
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+    }
     .meta { color: var(--muted); margin: 0; font-size: 13px; }
-    .controls { display: flex; gap: 16px; margin: 20px 0; }
+    .controls { display: flex; flex-wrap: wrap; gap: 16px; margin: 0 0 18px; }
     label {
       display: flex;
       flex-direction: column;
@@ -100,7 +92,7 @@ import { ComputerSummary, SeriesPoint } from '../core/models';
       border-radius: var(--radius);
       padding: 12px 10px 6px;
     }
-    .chart { height: 420px; }
+    .chart { height: 440px; }
   `]
 })
 export class HistoryComponent implements OnInit {

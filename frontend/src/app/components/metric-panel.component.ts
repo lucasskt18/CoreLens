@@ -70,11 +70,11 @@ import { METRIC_COLORS } from '../core/chart.util';
       border: 1px solid var(--line);
       border-radius: var(--radius);
       padding: 18px 18px 14px;
-      min-height: 248px;
+      min-height: 236px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      transition: border-color 0.22s ease, background 0.22s ease;
+      transition: border-color 0.2s ease, background 0.2s ease;
     }
     .panel::before {
       content: "";
@@ -162,7 +162,8 @@ import { METRIC_COLORS } from '../core/chart.util';
       flex: 1;
       display: flex;
       align-items: flex-end;
-      padding-top: 24px;
+      padding-top: 28px;
+      min-height: 88px;
     }
     .capacity-label {
       margin: 0;
