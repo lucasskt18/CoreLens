@@ -81,7 +81,11 @@ interface PopupRow {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: var(--muted);
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--ok) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--ok) 24%, transparent);
+      color: var(--ok);
       font-size: 11px;
     }
     .dot {
@@ -90,7 +94,9 @@ interface PopupRow {
       border-radius: 50%;
       background: var(--critical);
     }
-    .dot.on { background: var(--ok); }
+    .dot.on {
+      background: var(--ok);
+    }
     ul {
       list-style: none;
       margin: 0;
@@ -122,17 +128,8 @@ interface PopupRow {
     .fill {
       height: 100%;
       --metric: #6ea8c9;
-      background: linear-gradient(90deg, color-mix(in srgb, var(--metric) 70%, #1a1d22), var(--metric));
+      background: var(--metric);
       transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .dot.on {
-      box-shadow: 0 0 0 0 rgba(110, 165, 138, 0.55);
-      animation: live-pulse 1.8s ease-out infinite;
-    }
-    @keyframes live-pulse {
-      0% { box-shadow: 0 0 0 0 rgba(110, 165, 138, 0.55); }
-      70% { box-shadow: 0 0 0 6px rgba(110, 165, 138, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(110, 165, 138, 0); }
     }
     .hint {
       margin: 16px 0 0;

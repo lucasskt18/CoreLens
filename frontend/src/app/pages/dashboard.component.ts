@@ -44,7 +44,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   diskHint = '';
   netHint = '';
   gpuHint = '';
-  tempHint = '';
   cpuPct: number | null = null;
   ramPct: number | null = null;
   diskPct: number | null = null;
@@ -73,6 +72,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.poll) {
       clearInterval(this.poll);
     }
+  }
+
+  get osLabel(): string {
+    const raw = this.computer?.osVersion ?? '';
+    return raw.replace(/^Microsoft\s+/i, '').replace(/\s*\((X64|x64|X86)\)\s*$/i, '');
   }
 
   get connected(): boolean {
@@ -139,7 +143,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.ramPct = ram ?? null;
     this.ramCapacity = `${formatBytes(this.metrics.getLatest('ram:0', 'used_bytes'))} / ${formatBytes(this.metrics.getLatest('ram:0', 'total_bytes'))}`;
     this.cpuHasSeries = cpuSeries.length > 1;
-    this.tempHint = cpuTemp == null ? 'Temp requer o agent em modo elevado' : '';
     this.cpuChart = sparkline(cpuSeries, 'percent', METRIC_COLORS.cpu);
 
     const diskKey = this.metrics.keysByPrefix('disk:', 'used_pct')[0];
@@ -157,7 +160,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const down = this.metrics.getLatest(netKey, 'bytes_recv_per_s');
       const up = this.metrics.getLatest(netKey, 'bytes_sent_per_s');
       this.netValue = formatRate(down);
-      this.netHint = `envio ${formatRate(up)} · ${friendlyComponentLabel(netKey)}`;
+      this.netHint = `↑ ${formatRate(up)} · ${friendlyComponentLabel(netKey)}`;
       this.netHasSeries = downSeries.length > 1;
       this.netChart = sparklinePair(downSeries, upSeries, METRIC_COLORS.net);
     }

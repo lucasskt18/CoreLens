@@ -1,20 +1,17 @@
 <div class="page">
   <header class="hero">
-    <div class="identity">
-      <span class="mark" aria-hidden="true"></span>
-      <div>
-        <p class="kicker">CoreLens</p>
-        <h1>{{ computer?.hostname || 'Aguardando agent' }}</h1>
-        @if (computer) {
-          <div class="chips">
-            <span>{{ computer.osVersion }}</span>
-            <span>agent {{ computer.agentVersion }}</span>
-            <span>visto {{ computer.lastSeenAt | date:'HH:mm:ss' }}</span>
-          </div>
-        } @else {
-          <p class="meta">O Hardware Agent ainda não enviou inventário.</p>
-        }
-      </div>
+    <div>
+      <p class="kicker">Esta máquina</p>
+      <h1>{{ computer?.hostname || 'Aguardando agent' }}</h1>
+      @if (computer) {
+        <div class="chips">
+          <span>{{ osLabel }}</span>
+          <span>agent {{ computer.agentVersion }}</span>
+          <span>visto {{ computer.lastSeenAt | date:'HH:mm:ss' }}</span>
+        </div>
+      } @else {
+        <p class="meta">O Hardware Agent ainda não enviou inventário.</p>
+      }
     </div>
     <div class="status">
       <span class="live" [class.off]="!connected">
@@ -22,7 +19,6 @@
         {{ connected ? 'Ao vivo' : 'Desconectado' }}
       </span>
       <button type="button" (click)="openPopup()">Segundo plano</button>
-      <a routerLink="/history">Histórico</a>
     </div>
   </header>
 
@@ -40,7 +36,6 @@
       [value]="cpuValue"
       [secondaryLabel]="'temp'"
       [secondaryValue]="tempValue"
-      [hint]="tempHint"
       [options]="cpuChart"
       [hasSeries]="cpuHasSeries"
       [progress]="cpuPct"
@@ -67,7 +62,7 @@
     </app-metric-panel>
     <app-metric-panel
       kicker="Rede"
-      title="Download"
+      title="Tráfego"
       [value]="netValue"
       [hint]="netHint"
       [options]="netChart"
