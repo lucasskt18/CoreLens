@@ -1,4 +1,4 @@
-# CoreLens
+# Painel CoreLens
 
 Monitor de hardware Windows em tempo real. Um agent no host lê CPU, RAM, disco, rede e sensores; a API empurra as métricas ao vivo para um dashboard Angular. Histórico fica em TimescaleDB. A ingestão não chama IA — existe só a porta `IInsightProvider` para plugar isso depois.
 
